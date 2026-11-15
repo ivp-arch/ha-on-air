@@ -68,8 +68,9 @@ def merge_programmes(
        timeline (and the titles).
     2. Programmes of the next sources fill the uncovered intervals, clipped to the
        interval; pieces shorter than ``tolerance`` are dropped.
-    3. A programme without category takes it from a programme of another source
-       starting within ``tolerance`` (inclusive), first source in ``order`` first.
+    3. A programme without category takes it from the programme of another source
+       whose start is closest, within ``tolerance`` (inclusive); first source in
+       ``order`` first.
     The result is sorted and has no overlaps.
     """
     sources = _ordered_sources(by_source, order)
@@ -91,14 +92,12 @@ def merge_programmes(
             for src in sources:
                 if src == prog.source:
                     continue
-                match = next(
-                    (
-                        other
-                        for other in lists[src]
-                        if other.category and abs(other.start - prog.start) <= tolerance
-                    ),
-                    None,
-                )
+                candidates = [
+                    other
+                    for other in lists[src]
+                    if other.category and abs(other.start - prog.start) <= tolerance
+                ]
+                match = min(candidates, key=lambda o: abs(o.start - prog.start), default=None)
                 if match is not None:
                     prog = replace(prog, category=match.category)
                     break

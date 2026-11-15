@@ -177,6 +177,7 @@ async def test_options_change_channels_and_keep_the_rest(hass, loaded_entry):
         },
     )
     assert result["type"] is FlowResultType.CREATE_ENTRY
+    await hass.async_block_till_done()  # the options change reloads the entry
     opts = loaded_entry.options
     assert opts[CONF_CHANNELS] == ["rai1", "canale5"]
     assert opts[CONF_CHANNEL_NAMES]["canale5"] == "Canale 5"

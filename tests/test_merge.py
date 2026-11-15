@@ -113,3 +113,20 @@ def test_merge_guides_names_and_keys():
     assert progs["rai1"][0].category == "Sport" and progs["rai1"][0].source == "open_epg"
     assert progs["skycrime"][0].title == "Delitti"
     assert "skysportmix" not in progs
+
+
+def test_category_from_the_closest_start():
+    # Seen on real data (Rai 2, 15/11/2026): a short news slot just before the match
+    # is also within tolerance; the category must come from the closest start.
+    out = merge_programmes(
+        {
+            "open_epg": [p("Supercoppa SuperLega 2026 Finale", t(16, 50), t(19, 30))],
+            "iptv_epg": [
+                p("Tg2 L.I.S.", t(16, 46), t(16, 50), "Notizie", "iptv_epg"),
+                p("Pallavolo: Serie A Maschile", t(16, 50), t(19, 30), "Sport", "iptv_epg"),
+            ],
+        },
+        SOURCE_ORDER,
+    )
+    match = next(x for x in out if x.title.startswith("Supercoppa"))
+    assert match.category == "Sport"
