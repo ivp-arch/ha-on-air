@@ -108,6 +108,11 @@ class OnAirCoordinator(DataUpdateCoordinator[GuideData]):
         self._guides: dict[str, SourceGuide] = {}
         self._status: dict[str, SourceStatus] = {}
 
+    @property
+    def source_guides(self) -> Mapping[str, SourceGuide]:
+        """Last successfully parsed guide per source (read-only view)."""
+        return self._guides
+
     async def _async_update_data(self) -> GuideData:
         options = self.config_entry.options
         urls = source_urls(options)
