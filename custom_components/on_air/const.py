@@ -7,6 +7,9 @@ from typing import Final
 
 from homeassistant.const import Platform
 
+from .contract import MAX_STATE_LEN  # noqa: F401  (re-exported)
+from .guide import DAY_ROLLOVER_HOUR  # noqa: F401  (re-exported)
+
 DOMAIN: Final = "on_air"
 PLATFORMS: Final = [Platform.SENSOR]
 
@@ -32,7 +35,3 @@ DEFAULT_TONIGHT_END: Final = "00:00:00"
 UPDATE_INTERVAL: Final = timedelta(hours=12)
 # Programmes kept in memory: from now - KEEP_BEFORE to tomorrow at DAY_ROLLOVER_HOUR.
 KEEP_BEFORE: Final = timedelta(hours=6)
-# Before this local hour, "tonight" still means the previous evening.
-DAY_ROLLOVER_HOUR: Final = 6
-# Home Assistant limit on the length of a state (MAX_LENGTH_STATE_STATE).
-MAX_STATE_LEN: Final = 255
