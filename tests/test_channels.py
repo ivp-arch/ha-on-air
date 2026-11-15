@@ -7,6 +7,7 @@ from custom_components.on_air.channels import (
     GROUPS,
     channel_key,
     channels_in_groups,
+    clean_name,
     is_variant,
 )
 
@@ -69,3 +70,17 @@ def test_group_excludes_variants():
 def test_groups_union_sorted_by_name_and_unknown_group_ignored():
     catalog = {"rai2": "Rai 2", "rai1": "Rai 1", "canale5": "Canale 5"}
     assert channels_in_groups(catalog, ["mediaset", "rai", "nope"]) == ["canale5", "rai1", "rai2"]
+
+
+@pytest.mark.parametrize(
+    "raw,clean",
+    [
+        ("IT - Sky Uno +1", "Sky Uno +1"),
+        ("Rai 1 HD 101.it", "Rai 1"),
+        ("Sky Sport Mix.it", "Sky Sport Mix"),
+        ("  IT - La7  ", "La7"),
+        ("nodisplay", "nodisplay"),
+    ],
+)
+def test_clean_name(raw, clean):
+    assert clean_name(raw) == clean

@@ -82,6 +82,14 @@ def channel_key(display_name: str) -> str:
     return _NON_ALNUM.sub("", name)
 
 
+def clean_name(display_name: str) -> str:
+    """Return a readable channel name: "IT - Sky Uno +1" -> "Sky Uno +1", "Rai 1 HD 101.it" -> "Rai 1"."""
+    name = _PREFIX.sub("", display_name.strip())
+    name = _SUFFIX.sub("", name)
+    name = _HD.sub("", name)
+    return " ".join(name.split()) or display_name.strip()
+
+
 def is_variant(display_name: str) -> bool:
     """Return True for time-shifted variants such as "+1", "+24" or "Sky Uno +"."""
     return "+" in display_name
