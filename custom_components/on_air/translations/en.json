@@ -1,0 +1,76 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Guide sources",
+        "description": "Where to download the TV guide from. Both guides are free and complement each other.",
+        "data": {
+          "open_epg_url": "open-epg.com guide",
+          "iptv_epg_url": "iptv-epg.org guide"
+        },
+        "data_description": {
+          "open_epg_url": "Leave empty to skip this source.",
+          "iptv_epg_url": "Leave empty to skip this source."
+        }
+      },
+      "channels": {
+        "title": "Channels",
+        "description": "Choose the channels to follow. You can add whole groups; +1 and +24 versions are picked one by one.",
+        "data": {
+          "groups": "Add groups",
+          "channels": "Channels"
+        },
+        "data_description": {
+          "groups": "Every channel of the group, without the +1 and +24 versions.",
+          "channels": "The main channels are already selected."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "No guide reachable. Check the addresses or try again later.",
+      "no_sources": "Enter at least one source.",
+      "no_channels": "Choose at least one channel or group."
+    },
+    "abort": {
+      "already_configured": "On Air is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "On Air options",
+        "data": {
+          "open_epg_url": "open-epg.com guide",
+          "iptv_epg_url": "iptv-epg.org guide",
+          "groups": "Add groups",
+          "channels": "Channels",
+          "tonight_start": "Evening start",
+          "tonight_end": "Evening end"
+        },
+        "data_description": {
+          "open_epg_url": "Leave empty to skip this source.",
+          "iptv_epg_url": "Leave empty to skip this source.",
+          "groups": "Every channel of the group, without the +1 and +24 versions.",
+          "channels": "If the guides are unreachable, only the channels already chosen are listed.",
+          "tonight_start": "Start of the \"Tonight\" window.",
+          "tonight_end": "End of the \"Tonight\" window; 00:00 means midnight."
+        }
+      }
+    },
+    "error": {
+      "no_sources": "Enter at least one source.",
+      "no_channels": "Choose at least one channel or group."
+    }
+  },
+  "selector": {
+    "groups": {
+      "options": {
+        "rai": "Rai",
+        "mediaset": "Mediaset",
+        "sky_cinema": "Sky Cinema",
+        "sky_sport": "Sky Sport",
+        "sky": "Sky entertainment"
+      }
+    }
+  }
+}

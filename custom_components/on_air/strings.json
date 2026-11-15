@@ -1,0 +1,76 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Fonti della guida",
+        "description": "Da dove scaricare la guida TV. Le due guide sono gratuite e si completano a vicenda.",
+        "data": {
+          "open_epg_url": "Guida open-epg.com",
+          "iptv_epg_url": "Guida iptv-epg.org"
+        },
+        "data_description": {
+          "open_epg_url": "Lascia vuoto per non usare questa fonte.",
+          "iptv_epg_url": "Lascia vuoto per non usare questa fonte."
+        }
+      },
+      "channels": {
+        "title": "Canali",
+        "description": "Scegli i canali da seguire. Puoi aggiungere interi gruppi; le versioni +1 e +24 si scelgono una per una.",
+        "data": {
+          "groups": "Aggiungi gruppi",
+          "channels": "Canali"
+        },
+        "data_description": {
+          "groups": "Tutti i canali del gruppo, senza le versioni +1 e +24.",
+          "channels": "Già selezionati i canali principali."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Nessuna guida raggiungibile. Controlla gli indirizzi o riprova più tardi.",
+      "no_sources": "Indica almeno una fonte.",
+      "no_channels": "Scegli almeno un canale o un gruppo."
+    },
+    "abort": {
+      "already_configured": "On Air è già configurato."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opzioni di On Air",
+        "data": {
+          "open_epg_url": "Guida open-epg.com",
+          "iptv_epg_url": "Guida iptv-epg.org",
+          "groups": "Aggiungi gruppi",
+          "channels": "Canali",
+          "tonight_start": "Inizio della serata",
+          "tonight_end": "Fine della serata"
+        },
+        "data_description": {
+          "open_epg_url": "Lascia vuoto per non usare questa fonte.",
+          "iptv_epg_url": "Lascia vuoto per non usare questa fonte.",
+          "groups": "Tutti i canali del gruppo, senza le versioni +1 e +24.",
+          "channels": "Se le guide non sono raggiungibili, compaiono solo i canali già scelti.",
+          "tonight_start": "Inizio della fascia \"Stasera\".",
+          "tonight_end": "Fine della fascia \"Stasera\"; 00:00 vuol dire mezzanotte."
+        }
+      }
+    },
+    "error": {
+      "no_sources": "Indica almeno una fonte.",
+      "no_channels": "Scegli almeno un canale o un gruppo."
+    }
+  },
+  "selector": {
+    "groups": {
+      "options": {
+        "rai": "Rai",
+        "mediaset": "Mediaset",
+        "sky_cinema": "Sky Cinema",
+        "sky_sport": "Sky Sport",
+        "sky": "Sky intrattenimento"
+      }
+    }
+  }
+}
