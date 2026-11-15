@@ -4,6 +4,7 @@ from datetime import time
 
 from custom_components.on_air.guide import (
     next_boundary,
+    next_rollover,
     now_next,
     overlapping,
     tonight_window,
@@ -65,3 +66,9 @@ def test_next_boundary():
     assert next_boundary(GAP, rome(*D, 21, 0)) == rome(*D, 21, 10)
     assert next_boundary(RAI1, rome(*D, 19, 0)) == rome(*D, 20, 0)
     assert next_boundary(RAI1, rome(*D, 23, 30)) is None
+
+
+def test_next_rollover():
+    assert next_rollover(rome(*D, 21, 40)) == rome(2026, 11, 16, 6)
+    assert next_rollover(rome(2026, 11, 16, 5, 0)) == rome(2026, 11, 16, 6)
+    assert next_rollover(rome(2026, 11, 16, 6, 0)) == rome(2026, 11, 17, 6)

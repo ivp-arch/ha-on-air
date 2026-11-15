@@ -58,3 +58,13 @@ def next_boundary(programmes: Sequence[Programme], at: datetime) -> datetime | N
     candidates = [p.end for p in programmes if p.start <= at < p.end]
     candidates += [p.start for p in programmes if p.start > at][:1]
     return min(candidates, default=None)
+
+
+def next_rollover(at: datetime, rollover_hour: int = DAY_ROLLOVER_HOUR) -> datetime:
+    """Next instant (after ``at``) when "tonight" moves to the new day."""
+    candidate = datetime.combine(at.date(), time(rollover_hour), tzinfo=at.tzinfo)
+    if candidate <= at:
+        candidate = datetime.combine(
+            at.date() + timedelta(days=1), time(rollover_hour), tzinfo=at.tzinfo
+        )
+    return candidate
