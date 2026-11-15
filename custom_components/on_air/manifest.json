@@ -1,0 +1,14 @@
+{
+  "domain": "on_air",
+  "name": "On Air",
+  "codeowners": [
+    "@ivp-arch"
+  ],
+  "config_flow": true,
+  "documentation": "https://github.com/ivp-arch/ha-on-air",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/ivp-arch/ha-on-air/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}
