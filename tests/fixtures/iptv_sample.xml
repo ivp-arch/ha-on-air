@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Shaped like iptv-epg.org: "IT - " prefix, categories, +0000 offsets, "No Data" placeholders. -->
+<tv>
+  <channel id="Rai1.it"><display-name>IT - Rai 1</display-name></channel>
+  <channel id="Rai2.it"><display-name>IT - Rai 2</display-name></channel>
+  <channel id="SkySportUno.it"><display-name>IT - Sky Sport Uno</display-name></channel>
+  <channel id="SkyUnoPlus1.it"><display-name>IT - Sky Uno +1</display-name></channel>
+  <channel id="nodisplay"></channel>
+
+  <!-- No stop: ends when the next programme starts. -->
+  <programme start="20261115190000 +0000" channel="Rai1.it"><title>Tg1</title><category>Notizie</category></programme>
+  <programme start="20261115193000 +0000" stop="20261115222000 +0000" channel="Rai1.it"><title>UEFA Nations League</title><category>Sport</category></programme>
+  <programme start="20261115222000 +0000" stop="20261115222500 +0000" channel="Rai1.it"><title>Tg1</title><category>Notizie</category></programme>
+  <!-- Malformed start and missing title: dropped. -->
+  <programme start="2026-11-15 23:00" stop="20261115233000 +0000" channel="Rai1.it"><title>Bad time</title></programme>
+  <programme start="20261115223000 +0000" stop="20261115230000 +0000" channel="Rai1.it"><category>Notizie</category></programme>
+
+  <programme start="20261115200000 +0000" stop="20261115205000 +0000" channel="Rai2.it"><title>The Rookie</title><category></category><category>Serie TV</category></programme>
+  <programme start="20261115205000 +0000" stop="20261115213500 +0000" channel="Rai2.it"><title>   </title></programme>
+  <!-- Last programme without stop: dropped. -->
+  <programme start="20261115220000 +0000" channel="Rai2.it"><title>Senza fine</title></programme>
+
+  <programme start="20261115190000 +0000" stop="20261115200000 +0000" channel="SkySportUno.it"><title>No Data</title></programme>
+  <programme start="20261115200000 +0000" stop="20261115210000 +0000" channel="SkySportUno.it"><title>no data</title></programme>
+  <programme start="20261115210000 +0000" stop="20261115220000 +0000" channel="SkySportUno.it"><title>Tennis</title><category>Sport</category></programme>
+
+  <programme start="20261115180000 +0000" stop="20261115210000 +0000" channel="SkyUnoPlus1.it"><title>X Factor</title><category>Intrattenimento</category></programme>
+  <programme start="20261115190000 +0000" stop="20261115200000 +0000" channel="nodisplay"><title>Something</title></programme>
+  <!-- Undeclared channel: dropped. -->
+  <programme start="20261115190000 +0000" stop="20261115200000 +0000" channel="ghost"><title>Boo</title></programme>
+</tv>

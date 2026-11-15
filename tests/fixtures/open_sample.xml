@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Shaped like open-epg.com: ".it" suffix, "HD 101" duplicates, no categories. -->
+<tv>
+  <channel id="Rai1.it"><display-name lang="it">Rai 1.it</display-name></channel>
+  <channel id="Rai1HD.it"><display-name lang="it">Rai 1 HD 101.it</display-name></channel>
+  <channel id="SkySportUno.it"><display-name lang="it">Sky Sport Uno.it</display-name></channel>
+  <channel id="Canale5.it"><display-name lang="it">Canale 5.it</display-name></channel>
+
+  <programme start="20261115190000 +0000" stop="20261115193000 +0000" channel="Rai1.it"><title lang="it">TELEGIORNALE</title></programme>
+  <programme start="20261115193000 +0000" stop="20261115222000 +0000" channel="Rai1.it"><title lang="it">Belgio - Italia</title></programme>
+  <programme start="20261115222000 +0000" stop="20261115222500 +0000" channel="Rai1.it"><title lang="it">TG1 Sera</title></programme>
+  <programme start="20261116000000 +0000" stop="20261116010000 +0000" channel="Rai1.it"><title lang="it">Dopo mezzanotte</title></programme>
+
+  <programme start="20261115190000 +0000" stop="20261115193000 +0000" channel="Rai1HD.it"><title lang="it">Tg1</title></programme>
+  <programme start="20261115193000 +0000" stop="20261115222000 +0000" channel="Rai1HD.it"><title lang="it">UEFA Nations League</title></programme>
+
+  <programme start="20261115193000 +0000" stop="20261115213000 +0000" channel="SkySportUno.it"><title lang="it">Singolare: Sessione Serale</title></programme>
+
+  <!-- No offset: read in the default time zone. -->
+  <programme start="20261115213000" stop="20261115230900" channel="Canale5.it"><title lang="it">Racconto di una notte</title></programme>
+</tv>
