@@ -85,3 +85,58 @@ def test_channels_only_reads_no_programmes(open_bytes):
     g = parse_xmltv(open_bytes, source="open_epg", channels_only=True)
     assert set(g.channels) == {"rai1", "skysportuno", "canale5"}
     assert g.programmes == {}
+
+
+def _guide(programmes: str) -> bytes:
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?><tv>'
+        '<channel id="s1"><display-name>Sky Sport Uno</display-name></channel>'
+        f"{programmes}</tv>"
+    ).encode()
+
+
+def _prog(start: str, title: str, stop: str | None = None, category: str | None = None) -> str:
+    stop_attr = f' stop="{stop} +0000"' if stop else ""
+    cat = f"<category>{category}</category>" if category else ""
+    return f'<programme channel="s1" start="{start} +0000"{stop_attr}><title>{title}</title>{cat}</programme>'
+
+
+@pytest.mark.parametrize(
+    "title",
+    ["15/11/2026", "16.11.26", "2026-11-16", "No Game Today", "no game today",
+     "Next Game: Perugia - Torres on 2026-11-16 at 02:15PM EST"],
+)
+def test_filler_titles_are_dropped(title):
+    data = _guide(
+        _prog("20261116180000", "Tennis", "20261116190000")
+        + _prog("20261116190000", title, "20261116200000")
+    )
+    g = parse_xmltv(data, source="open_epg")
+    assert [p.title for p in g.programmes["skysportuno"]] == ["Tennis"]
+
+
+@pytest.mark.parametrize("title", ["Ep.7", "Next Gen ATP Finals", "1mattina News", "10050 Cielo Drive", "Tg1 15/11"])
+def test_real_titles_are_kept(title):
+    g = parse_xmltv(_guide(_prog("20261116190000", title, "20261116200000")), source="open_epg")
+    assert [p.title for p in g.programmes["skysportuno"]] == [title]
+
+
+def test_dropped_filler_still_ends_the_previous_programme():
+    # Without stop, a programme ends where the next row starts, filler or not.
+    data = _guide(
+        _prog("20261116180000", "Tennis")
+        + _prog("20261116190000", "15/11/2026")
+        + _prog("20261116200000", "Golf", "20261116210000")
+    )
+    progs = parse_xmltv(data, source="open_epg").programmes["skysportuno"]
+    assert [(p.title, p.end.hour) for p in progs] == [("Tennis", 19), ("Golf", 21)]
+
+
+@pytest.mark.parametrize(
+    ("raw", "expected"),
+    [("Sports", "Sport"), ("sports", "Sport"), ("Documentari", "Documentario"),
+     ("Sport", "Sport"), ("Cinema", "Cinema"), ("Film", "Film")],
+)
+def test_category_aliases(raw, expected):
+    g = parse_xmltv(_guide(_prog("20261116190000", "Tennis", "20261116200000", raw)), source="iptv_epg")
+    assert g.programmes["skysportuno"][0].category == expected

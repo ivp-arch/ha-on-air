@@ -14,8 +14,15 @@ from .models import Programme, SourceGuide
 
 _GZIP_MAGIC = b"\x1f\x8b"
 _TIME = re.compile(r"^\s*(\d{14})(?:\s*([+-])(\d{2})(\d{2}))?\s*$")
-# Hourly fillers some sources put where they have no data.
-_PLACEHOLDERS = frozenset({"no data"})
+# Fillers some sources put where they have no programme: hourly "No Data",
+# "No Game Today" on event channels, titles made only of a date.
+_PLACEHOLDERS = frozenset({"no data", "no game today"})
+_FILLER = re.compile(
+    r"^(?:\d{1,2}[/.-]\d{1,2}[/.-]\d{2,4}|\d{4}-\d{2}-\d{2}|next game:.*)$",
+    re.IGNORECASE,
+)
+# Same category spelled differently across sources; keys are casefolded.
+_CATEGORY_ALIASES = {"sports": "Sport", "documentari": "Documentario"}
 
 
 def parse_time(value: str, default_tz: tzinfo) -> datetime | None:
@@ -37,6 +44,16 @@ def parse_time(value: str, default_tz: tzinfo) -> datetime | None:
     if sign == "-":
         offset = -offset
     return (naive - offset).replace(tzinfo=UTC)
+
+
+def _is_filler(title: str) -> bool:
+    return title.casefold() in _PLACEHOLDERS or bool(_FILLER.match(title))
+
+
+def _category(value: str | None) -> str | None:
+    if value is None:
+        return None
+    return _CATEGORY_ALIASES.get(value.casefold(), value)
 
 
 def _first_text(elem: ET.Element, tag: str) -> str | None:
@@ -61,8 +78,10 @@ def parse_xmltv(
     - ``keep(key)`` false: the channel and its programmes are ignored.
     - ``window``: only programmes overlapping [start, end) are kept.
     - ``channels_only``: stop at the first programme (XMLTV lists channels first).
-    Bad rows (no title, placeholder title, malformed time, undeclared channel) are
-    skipped. A programme without stop ends when the next one starts; the last one
+    Bad rows (no title, malformed time, undeclared channel) are skipped. Filler
+    rows (placeholder or date-only titles) are dropped after they have ended the
+    previous programme. A programme without stop ends when the next one starts
+    (filler included); the last one
     of a channel without stop is dropped. When two channels of the same source map
     to the same key, the one with more programmes wins (ties: first declared).
     """
@@ -91,11 +110,11 @@ def parse_xmltv(
             if cid in id_key:
                 title = _first_text(elem, "title")
                 start = parse_time(elem.get("start", ""), default_tz)
-                if title and start and title.casefold() not in _PLACEHOLDERS:
+                if title and start:
                     stop_raw = elem.get("stop")
                     stop = parse_time(stop_raw, default_tz) if stop_raw else None
                     rows.setdefault(cid, []).append(
-                        (start, stop, title, _first_text(elem, "category"))
+                        (start, stop, title, _category(_first_text(elem, "category")))
                     )
             elem.clear()
 
@@ -107,7 +126,7 @@ def parse_xmltv(
             end = stop
             if end is None and i + 1 < len(items):
                 end = items[i + 1][0]
-            if end is None or end <= start:
+            if end is None or end <= start or _is_filler(title):
                 continue
             if window and not (start < window[1] and end > window[0]):
                 continue

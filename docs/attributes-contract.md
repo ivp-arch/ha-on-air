@@ -32,9 +32,9 @@ A **programme** is an object:
 
 | Field | Type | Meaning |
 |---|---|---|
-| `title` | string | Title as given by the source (never truncated here) |
+| `title` | string | Title as given by the source (never truncated here); filler rows (`No Data`, `No Game Today`, `Next Game: …`, date-only titles) are dropped; the other source can fill the gap |
 | `start`, `end` | ISO 8601 | Local time zone of Home Assistant, with offset |
-| `category` | string or `null` | Category from the guide (e.g. `Film`, `Sport`); `null` when no source has one |
+| `category` | string or `null` | Category from the guide (e.g. `Film`, `Sport`), with known spelling variants unified (`Sports` → `Sport`, `Documentari` → `Documentario`); `null` when no source has one |
 | `source` | string | Source the title comes from |
 
 `null` means "not known"; it is never replaced by a guess.
