@@ -31,39 +31,32 @@ DEFAULT_CHANNELS: Final[tuple[str, ...]] = (
     "skysportuno",
 )
 
-# Group -> channel key prefixes.
+# Group -> exact channel keys. Exact lists, not prefixes: real guides also carry
+# satellite duplicates ("Rai 4 5021"), radio ("Rai Radio 2") and event-only
+# channels ("Sky Sport 251"), which can still be picked one by one.
 GROUPS: Final[dict[str, tuple[str, ...]]] = {
-    "rai": ("rai",),
-    "mediaset": (
-        "rete4",
-        "canale5",
-        "italia1",
-        "italia2",
-        "la5",
-        "iris",
-        "focus",
-        "topcrime",
-        "mediasetextra",
-        "boing",
-        "cartoonito",
-        "tgcom24",
-        "cine34",
-        "twentyseven",
-        "mediaset20",
+    "rai": (
+        "rai1", "rai2", "rai3", "rai4", "rai5", "raimovie", "raipremium",
+        "raigulp", "raiyoyo", "rainews", "raistoria", "raiscuola", "raisport",
     ),
-    "sky_cinema": ("skycinema",),
-    "sky_sport": ("skysport",),
+    "mediaset": (
+        "rete4", "canale5", "italia1", "italia2", "la5", "iris", "focus",
+        "topcrime", "mediasetextra", "boing", "cartoonito", "tgcom24", "cine34",
+        "twentyseven", "mediaset20",
+    ),
+    "sky_cinema": (
+        "skycinemauno", "skycinemadue", "skycinemaaction", "skycinemacollection",
+        "skycinemacomedy", "skycinemacult", "skycinemadrama", "skycinemafamily",
+        "skycinemaromance", "skycinemasuspense",
+    ),
+    "sky_sport": (
+        "skysportuno", "skysport24", "skysportcalcio", "skysportarena", "skysportmax",
+        "skysportf1", "skysportmotogp", "skysporttennis", "skysportnba",
+        "skysportgolf", "skysportlegend", "skysportmix",
+    ),
     "sky": (
-        "skyuno",
-        "skyatlantic",
-        "skyserie",
-        "skyinvestigation",
-        "skycrime",
-        "skydocumentaries",
-        "skynature",
-        "skyarte",
-        "skyadventure",
-        "skycollection",
+        "skyuno", "skyatlantic", "skyserie", "skyinvestigation", "skycrime",
+        "skydocumentaries", "skynature", "skyarte", "skyadventure", "skycollection",
     ),
 }
 
@@ -96,17 +89,10 @@ def is_variant(display_name: str) -> bool:
 
 
 def channels_in_groups(catalog: Mapping[str, str], groups: Iterable[str]) -> list[str]:
-    """Return the catalog keys belonging to the groups, without variants.
+    """Return the catalog keys listed in the groups, sorted by display name.
 
-    ``catalog`` maps channel key -> display name. Unknown groups are ignored.
-    The result is sorted by display name.
+    ``catalog`` maps channel key -> display name. Unknown groups are ignored;
+    group channels missing from the catalog are skipped.
     """
-    prefixes = tuple(p for g in groups for p in GROUPS.get(g, ()))
-    if not prefixes:
-        return []
-    keys = [
-        key
-        for key in catalog
-        if key.startswith(prefixes) and _VARIANT_MARK not in key
-    ]
-    return sorted(keys, key=lambda k: catalog[k].casefold())
+    wanted = {key for group in groups for key in GROUPS.get(group, ())}
+    return sorted((k for k in catalog if k in wanted), key=lambda k: catalog[k].casefold())

@@ -84,3 +84,19 @@ def test_groups_union_sorted_by_name_and_unknown_group_ignored():
 )
 def test_clean_name(raw, clean):
     assert clean_name(raw) == clean
+
+
+def test_rai_group_skips_satellite_duplicates_and_radio():
+    # Real catalog entries seen on 16/11/2026.
+    catalog = {
+        "rai": "Rai", "rai1": "Rai 1", "rai4": "Rai 4", "rai45021": "Rai 4 5021",
+        "rairadio2": "Rai Radio 2", "raisport": "Rai Sport", "raisport227": "RAI Sport 227",
+        "raigulp": "Rai Gulp", "raigulp5042": "Rai Gulp 5042",
+    }
+    assert channels_in_groups(catalog, ["rai"]) == ["rai1", "rai4", "raigulp", "raisport"]
+
+
+def test_sky_sport_group_skips_event_channels():
+    catalog = {"skysportuno": "Sky Sport Uno", "skysport251": "Sky Sport 251",
+               "skysport4k": "Sky Sport 4K", "skysportcalcio": "Sky Sport Calcio"}
+    assert channels_in_groups(catalog, ["sky_sport"]) == ["skysportcalcio", "skysportuno"]

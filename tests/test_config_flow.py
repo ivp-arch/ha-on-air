@@ -163,42 +163,70 @@ async def test_setup_retries_when_no_source_works(hass, aioclient_mock):
     assert entry.state is ConfigEntryState.SETUP_RETRY
 
 
+async def open_option(hass, entry, step):
+    result = await hass.config_entries.options.async_init(entry.entry_id)
+    assert result["type"] is FlowResultType.MENU
+    assert result["menu_options"] == ["channels", "reset_channels", "settings"]
+    return await hass.config_entries.options.async_configure(result["flow_id"], {"next_step_id": step})
+
+
 async def test_options_change_channels_and_keep_the_rest(hass, loaded_entry):
-    result = await hass.config_entries.options.async_init(loaded_entry.entry_id)
-    assert result["step_id"] == "init"
+    result = await open_option(hass, loaded_entry, "channels")
+    assert result["step_id"] == "channels"
     assert suggested(result, CONF_CHANNELS) == ["rai1", "ghost"]
     result = await hass.config_entries.options.async_configure(
-        result["flow_id"],
-        {
-            **URLS,
-            CONF_CHANNELS: ["rai1", "canale5"],
-            CONF_TONIGHT_START: "20:30:00",
-            CONF_TONIGHT_END: "00:00:00",
-        },
+        result["flow_id"], {CONF_CHANNELS: ["rai1", "canale5"]}
     )
     assert result["type"] is FlowResultType.CREATE_ENTRY
     await hass.async_block_till_done()  # the options change reloads the entry
     opts = loaded_entry.options
     assert opts[CONF_CHANNELS] == ["rai1", "canale5"]
     assert opts[CONF_CHANNEL_NAMES]["canale5"] == "Canale 5"
-    assert opts[CONF_TONIGHT_START] == "20:30:00"
     assert (opts[CONF_OPEN_EPG_URL], opts[CONF_IPTV_EPG_URL]) == (OPEN_URL, IPTV_URL)
+    assert opts[CONF_TONIGHT_START] == "20:00:00"
+
+
+async def test_options_reset_channels_starts_empty(hass, loaded_entry):
+    result = await open_option(hass, loaded_entry, "reset_channels")
+    assert result["step_id"] == "reset_channels"
+    assert not suggested(result, CONF_CHANNELS)
+    result = await hass.config_entries.options.async_configure(result["flow_id"], {CONF_GROUPS: ["rai"]})
+    assert result["type"] is FlowResultType.CREATE_ENTRY
+    await hass.async_block_till_done()
+    assert loaded_entry.options[CONF_CHANNELS] == ["rai1", "rai2"]
+
+
+async def test_options_settings_keep_channels(hass, loaded_entry):
+    result = await open_option(hass, loaded_entry, "settings")
+    assert suggested(result, CONF_TONIGHT_START) == "20:00:00"
+    result = await hass.config_entries.options.async_configure(
+        result["flow_id"],
+        {CONF_IPTV_EPG_URL: IPTV_URL, CONF_TONIGHT_START: "20:30:00", CONF_TONIGHT_END: "23:30:00"},
+    )
+    assert result["type"] is FlowResultType.CREATE_ENTRY
+    await hass.async_block_till_done()
+    opts = loaded_entry.options
+    assert opts[CONF_OPEN_EPG_URL] == "" and opts[CONF_IPTV_EPG_URL] == IPTV_URL
+    assert (opts[CONF_TONIGHT_START], opts[CONF_TONIGHT_END]) == ("20:30:00", "23:30:00")
+    assert opts[CONF_CHANNELS] == ["rai1", "ghost"]
 
 
 async def test_options_without_catalog_offer_current_channels(hass, loaded_entry, aioclient_mock):
     aioclient_mock.clear_requests()
     mock_down(aioclient_mock)
-    result = await hass.config_entries.options.async_init(loaded_entry.entry_id)
+    result = await open_option(hass, loaded_entry, "channels")
     _, selector = field(result, CONF_CHANNELS)
     assert {o["value"]: o["label"] for o in selector.config["options"]} == {"rai1": "Rai 1", "ghost": "Ghost TV"}
 
 
 async def test_options_errors(hass, loaded_entry):
-    result = await hass.config_entries.options.async_init(loaded_entry.entry_id)
-    base = {CONF_TONIGHT_START: "20:00:00", CONF_TONIGHT_END: "00:00:00"}
-    r = await hass.config_entries.options.async_configure(result["flow_id"], {**base, CONF_CHANNELS: ["rai1"]})
+    result = await open_option(hass, loaded_entry, "settings")
+    r = await hass.config_entries.options.async_configure(
+        result["flow_id"], {CONF_TONIGHT_START: "20:00:00", CONF_TONIGHT_END: "00:00:00"}
+    )
     assert r["errors"] == {"base": "no_sources"}
-    r = await hass.config_entries.options.async_configure(r["flow_id"], {**base, **URLS})
+    result = await open_option(hass, loaded_entry, "channels")
+    r = await hass.config_entries.options.async_configure(result["flow_id"], {})
     assert r["errors"] == {"base": "no_channels"}
 
 

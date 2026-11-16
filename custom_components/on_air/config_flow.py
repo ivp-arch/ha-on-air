@@ -135,61 +135,91 @@ class OnAirConfigFlow(ConfigFlow, domain=DOMAIN):
 
 
 class OnAirOptionsFlow(OptionsFlow):
-    """Change sources, channels and the evening window. Always saves complete options."""
+    """Options as a menu: edit channels, start channels from scratch, sources and evening.
+
+    Every step saves the complete options (HA replaces them, it does not merge).
+    """
 
     def __init__(self) -> None:
         self._catalog: dict[str, str] | None = None
 
-    async def _async_catalog(self) -> dict[str, str]:
-        options = self.config_entry.options
-        names: dict[str, str] = dict(options.get(CONF_CHANNEL_NAMES, {}))
-        current = {k: names.get(k, k) for k in options.get(CONF_CHANNELS, [])}
-        try:
-            fetched = await async_fetch_catalog(self.hass, source_urls(options))
-        except SourceFetchError:
-            fetched = {}
-        # Keep the selected channels even when the sources do not list them now.
-        return {**current, **fetched}
-
     async def async_step_init(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        return self.async_show_menu(
+            step_id="init", menu_options=["channels", "reset_channels", "settings"]
+        )
+
+    async def _async_catalog(self) -> dict[str, str]:
         if self._catalog is None:
-            self._catalog = await self._async_catalog()
+            options = self.config_entry.options
+            names: dict[str, str] = dict(options.get(CONF_CHANNEL_NAMES, {}))
+            current = {k: names.get(k, k) for k in options.get(CONF_CHANNELS, [])}
+            try:
+                fetched = await async_fetch_catalog(self.hass, source_urls(options))
+            except SourceFetchError:
+                fetched = {}
+            # Keep the selected channels even when the sources do not list them now.
+            self._catalog = {**current, **fetched}
+        return self._catalog
+
+    async def _async_channels_step(
+        self, step_id: str, user_input: dict[str, Any] | None, preselected: list[str]
+    ) -> ConfigFlowResult:
+        catalog = await self._async_catalog()
+        errors: dict[str, str] = {}
+        if user_input is not None:
+            chosen = _chosen(catalog, user_input)
+            if chosen:
+                return self.async_create_entry(
+                    data={
+                        **self.config_entry.options,
+                        CONF_CHANNELS: chosen,
+                        CONF_CHANNEL_NAMES: {k: catalog.get(k, k) for k in chosen},
+                    }
+                )
+            errors["base"] = "no_channels"
+        schema = self.add_suggested_values_to_schema(
+            vol.Schema(_channel_fields(catalog)), user_input or {CONF_CHANNELS: preselected}
+        )
+        return self.async_show_form(step_id=step_id, data_schema=schema, errors=errors)
+
+    async def async_step_channels(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        current = list(self.config_entry.options.get(CONF_CHANNELS, []))
+        return await self._async_channels_step("channels", user_input, current)
+
+    async def async_step_reset_channels(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        return await self._async_channels_step("reset_channels", user_input, [])
+
+    async def async_step_settings(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         options = self.config_entry.options
         errors: dict[str, str] = {}
         if user_input is not None:
             urls = _urls_from(user_input)
-            chosen = _chosen(self._catalog, user_input)
-            if not any(urls.values()):
-                errors["base"] = "no_sources"
-            elif not chosen:
-                errors["base"] = "no_channels"
-            else:
+            if any(urls.values()):
                 return self.async_create_entry(
                     data={
                         **options,
                         **urls,
-                        CONF_CHANNELS: chosen,
-                        CONF_CHANNEL_NAMES: {k: self._catalog.get(k, k) for k in chosen},
                         CONF_TONIGHT_START: user_input.get(CONF_TONIGHT_START, DEFAULT_TONIGHT_START),
                         CONF_TONIGHT_END: user_input.get(CONF_TONIGHT_END, DEFAULT_TONIGHT_END),
                     }
                 )
+            errors["base"] = "no_sources"
         schema = vol.Schema(
             {
                 **_url_fields(),
-                **_channel_fields(self._catalog),
                 vol.Required(CONF_TONIGHT_START): TimeSelector(),
                 vol.Required(CONF_TONIGHT_END): TimeSelector(),
             }
         )
         current = {
             **{key: options.get(key, "") for key in _URL_KEYS},
-            CONF_CHANNELS: list(options.get(CONF_CHANNELS, [])),
             CONF_TONIGHT_START: options.get(CONF_TONIGHT_START, DEFAULT_TONIGHT_START),
             CONF_TONIGHT_END: options.get(CONF_TONIGHT_END, DEFAULT_TONIGHT_END),
         }
         return self.async_show_form(
-            step_id="init",
+            step_id="settings",
             data_schema=self.add_suggested_values_to_schema(schema, user_input or current),
             errors=errors,
         )

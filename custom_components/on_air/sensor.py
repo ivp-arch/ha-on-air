@@ -8,6 +8,7 @@ from typing import Any
 
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.event import async_track_point_in_time
@@ -37,9 +38,14 @@ async def async_setup_entry(
 ) -> None:
     """Set up one sensor per selected channel."""
     coordinator = entry.runtime_data
-    async_add_entities(
-        OnAirChannelSensor(coordinator, entry, key) for key in entry.options.get(CONF_CHANNELS, [])
-    )
+    keys: list[str] = entry.options.get(CONF_CHANNELS, [])
+    # Channels removed from the options leave registry entries behind: delete them.
+    wanted = {f"{DOMAIN}_{key}" for key in keys}
+    ent_reg = er.async_get(hass)
+    for reg_entry in er.async_entries_for_config_entry(ent_reg, entry.entry_id):
+        if reg_entry.unique_id not in wanted:
+            ent_reg.async_remove(reg_entry.entity_id)
+    async_add_entities(OnAirChannelSensor(coordinator, entry, key) for key in keys)
 
 
 class OnAirChannelSensor(CoordinatorEntity[OnAirCoordinator], SensorEntity):

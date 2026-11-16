@@ -120,3 +120,13 @@ async def test_timer_cancelled_on_unload(hass, freezer, mock_guides):
     assert await hass.config_entries.async_unload(entry.entry_id)
     await move(hass, freezer, "2026-11-15 22:20:00+00:00")  # must not raise or write states
     assert hass.states.get("sensor.on_air_rai_1").state == "unavailable"
+
+
+async def test_removed_channel_entity_is_deleted(hass, freezer, mock_guides):
+    entry = await setup_at(hass, freezer, "2026-11-15 20:40:00+00:00")
+    hass.config_entries.async_update_entry(entry, options={**entry.options, CONF_CHANNELS: ["rai1", "ghost"]})
+    await hass.async_block_till_done()  # the options change reloads the entry
+    ent_reg = er.async_get(hass)
+    ids = sorted(e.unique_id for e in er.async_entries_for_config_entry(ent_reg, entry.entry_id))
+    assert ids == ["on_air_ghost", "on_air_rai1"]
+    assert hass.states.get("sensor.on_air_rai_2") is None

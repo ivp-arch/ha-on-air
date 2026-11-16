@@ -19,7 +19,10 @@ from custom_components.on_air.diagnostics import async_get_config_entry_diagnost
 FIXTURES = Path(__file__).parent / "fixtures"
 
 
-async def test_diagnostics(hass, aioclient_mock):
+async def test_diagnostics(hass, aioclient_mock, freezer):
+    # Fixed clock: the fixtures hold the evening of 15/11/2026.
+    await hass.config.async_set_time_zone("Europe/Rome")
+    freezer.move_to("2026-11-15 20:40:00+00:00")
     aioclient_mock.get(SOURCE_URLS["open_epg"], status=404)
     aioclient_mock.get(SOURCE_URLS["iptv_epg"], content=(FIXTURES / "iptv_sample.xml").read_bytes())
     options = {

@@ -21,7 +21,7 @@
           "channels": "Channels"
         },
         "data_description": {
-          "groups": "Every channel of the group, without the +1 and +24 versions.",
+          "groups": "The group's main channels, without +1/+24 versions and event-only channels.",
           "channels": "The main channels are already selected."
         }
       }
@@ -39,19 +39,47 @@
     "step": {
       "init": {
         "title": "On Air options",
+        "menu_options": {
+          "channels": "Edit channels",
+          "reset_channels": "Start channels from scratch",
+          "settings": "Sources and evening window"
+        }
+      },
+      "channels": {
+        "title": "Edit channels",
+        "description": "Add or remove channels from the current selection.",
+        "data": {
+          "groups": "Add groups",
+          "channels": "Channels"
+        },
+        "data_description": {
+          "groups": "The group's main channels, without +1/+24 versions and event-only channels.",
+          "channels": "If the guides are unreachable, only the channels already chosen are listed."
+        }
+      },
+      "reset_channels": {
+        "title": "Start from scratch",
+        "description": "The current selection is replaced: choose the groups or channels to keep. Sensors of removed channels are deleted.",
+        "data": {
+          "groups": "Add groups",
+          "channels": "Channels"
+        },
+        "data_description": {
+          "groups": "The group's main channels, without +1/+24 versions and event-only channels.",
+          "channels": "Starts empty."
+        }
+      },
+      "settings": {
+        "title": "Sources and evening window",
         "data": {
           "open_epg_url": "open-epg.com guide",
           "iptv_epg_url": "iptv-epg.org guide",
-          "groups": "Add groups",
-          "channels": "Channels",
           "tonight_start": "Evening start",
           "tonight_end": "Evening end"
         },
         "data_description": {
           "open_epg_url": "Leave empty to skip this source.",
           "iptv_epg_url": "Leave empty to skip this source.",
-          "groups": "Every channel of the group, without the +1 and +24 versions.",
-          "channels": "If the guides are unreachable, only the channels already chosen are listed.",
           "tonight_start": "Start of the \"Tonight\" window.",
           "tonight_end": "End of the \"Tonight\" window; 00:00 means midnight."
         }

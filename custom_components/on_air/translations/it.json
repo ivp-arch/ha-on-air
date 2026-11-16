@@ -21,7 +21,7 @@
           "channels": "Canali"
         },
         "data_description": {
-          "groups": "Tutti i canali del gruppo, senza le versioni +1 e +24.",
+          "groups": "Tutti i canali principali del gruppo, senza versioni +1/+24 e senza canali solo eventi.",
           "channels": "Già selezionati i canali principali."
         }
       }
@@ -39,19 +39,47 @@
     "step": {
       "init": {
         "title": "Opzioni di On Air",
+        "menu_options": {
+          "channels": "Modifica i canali",
+          "reset_channels": "Ricomincia da zero con i canali",
+          "settings": "Fonti e fascia serale"
+        }
+      },
+      "channels": {
+        "title": "Modifica i canali",
+        "description": "Aggiungi o togli canali dalla selezione attuale.",
+        "data": {
+          "groups": "Aggiungi gruppi",
+          "channels": "Canali"
+        },
+        "data_description": {
+          "groups": "Tutti i canali principali del gruppo, senza versioni +1/+24 e senza canali solo eventi.",
+          "channels": "Se le guide non sono raggiungibili, compaiono solo i canali già scelti."
+        }
+      },
+      "reset_channels": {
+        "title": "Ricomincia da zero",
+        "description": "La selezione attuale viene sostituita: scegli i gruppi o i canali da tenere. I sensori dei canali tolti vengono cancellati.",
+        "data": {
+          "groups": "Aggiungi gruppi",
+          "channels": "Canali"
+        },
+        "data_description": {
+          "groups": "Tutti i canali principali del gruppo, senza versioni +1/+24 e senza canali solo eventi.",
+          "channels": "Parte vuota."
+        }
+      },
+      "settings": {
+        "title": "Fonti e fascia serale",
         "data": {
           "open_epg_url": "Guida open-epg.com",
           "iptv_epg_url": "Guida iptv-epg.org",
-          "groups": "Aggiungi gruppi",
-          "channels": "Canali",
           "tonight_start": "Inizio della serata",
           "tonight_end": "Fine della serata"
         },
         "data_description": {
           "open_epg_url": "Lascia vuoto per non usare questa fonte.",
           "iptv_epg_url": "Lascia vuoto per non usare questa fonte.",
-          "groups": "Tutti i canali del gruppo, senza le versioni +1 e +24.",
-          "channels": "Se le guide non sono raggiungibili, compaiono solo i canali già scelti.",
           "tonight_start": "Inizio della fascia \"Stasera\".",
           "tonight_end": "Fine della fascia \"Stasera\"; 00:00 vuol dire mezzanotte."
         }
