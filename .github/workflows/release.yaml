@@ -1,0 +1,13 @@
+name: Release checks
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Manifest version matches the tag
+        run: test "$(jq -r .version custom_components/on_air/manifest.json)" = "${GITHUB_REF_NAME#v}"
