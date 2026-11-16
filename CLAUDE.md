@@ -33,7 +33,7 @@ the rest is specific to this project.
 
 ## Project
 
-Home Assistant custom integration `on_air`: what is on Italian TV now and tonight, from free XMLTV guides (open-epg.com, iptv-epg.org), one sensor per selected channel. A separate repo holds the Lovelace card (`ha-on-air-card`). Personal use, not published; the structure stays Marketplace-compatible.
+Home Assistant custom integration `on_air`: what is on Italian TV now and tonight, from free XMLTV guides (open-epg.com, iptv-epg.org), one sensor per selected channel. A separate repo holds the Lovelace card (`ha-on-air-card`). Public repo, installed from the Home Assistant Marketplace (`hacs.json`); CI runs hassfest, HACS validation, tests and a release check (manifest version = tag).
 
 ### Architecture
 

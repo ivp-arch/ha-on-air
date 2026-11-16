@@ -17,7 +17,16 @@ These are third-party guides, free and unofficial: they can change address, form
 
 ## Installation
 
-Manual: copy `custom_components/on_air` into the `custom_components` folder of your Home Assistant configuration and restart Home Assistant.
+### Home Assistant Marketplace (2026.11 or later)
+1. Settings → Marketplace → menu (⋮) → **Add from link** (requires connecting a GitHub account)
+2. Enter `ivp-arch/ha-on-air`; if asked, choose the **Integration** type
+3. Install "On Air" and restart Home Assistant
+
+### HACS (Home Assistant 2026.10)
+HACS → Integrations → menu (⋮) → Custom repositories → add this repo's URL, category "Integration". Install and restart Home Assistant.
+
+### Manual
+Copy `custom_components/on_air` into the `custom_components` folder of your Home Assistant configuration and restart Home Assistant.
 
 ## Configuration
 
